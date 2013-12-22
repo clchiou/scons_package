@@ -20,6 +20,9 @@ class RuleRegistry:
         assert isinstance(label, Label)
         return self.rules[label]
 
+    def has_rule(self, rule):
+        return rule.name in self.rules
+
     def add_rule(self, rule):
         assert isinstance(rule, Rule)
         self.rules[rule.name] = rule
@@ -32,7 +35,6 @@ class Rule(object):
         assert all(isinstance(label, LabelOfFile) for label in inputs)
         assert all(isinstance(label, LabelOfRule) for label in depends)
         assert all(isinstance(label, LabelOfFile) for label in outputs)
-
         for label in inputs:
             if name.package_name != label.package_name:
                 raise ValueError('input outside the package: %s, %s' %
@@ -41,11 +43,19 @@ class Rule(object):
             if name.package_name != label.package_name:
                 raise ValueError('output outside the package: %s, %s' %
                         (repr(label), repr(name)))
-
         self.name = name
         self.inputs = inputs
         self.depends = depends
         self.outputs = outputs
+
+
+def check_depends(rules):
+    assert isinstance(rules, RuleRegistry)
+    for label in rules:
+        rule = rules[label]
+        for depend in rule.depends:
+            if depend not in rules:
+                yield label, depend
 
 
 def topology_sort(rules):
