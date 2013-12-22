@@ -5,12 +5,14 @@ from SCons.Script import Environment
 from scons_package.builder_maker_builder import BuilderMakerBuilder
 from scons_package.builder_maker_registry import BuilderMakerRegistry
 from scons_package.label import PackageName
+from scons_package.utils import glob
 
-__all__ = ['register_root_env',
-           'register_env',
+__all__ = ['cc_library',
            'cc_program',
-           'cc_library',
-           'make_builders']
+           'glob',
+           'make_builders',
+           'register_env',
+           'register_root_env']
 
 
 def register_root_env(env):

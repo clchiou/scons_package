@@ -62,9 +62,10 @@ class BuilderMakerBuilder:
                 export_env(new_env)  # Modify env in place
             if new_env is not None:
                 env = new_env
-            # Call builder
+            # Call builder and make alias
             builder = getattr(env, builder_type)
             output = builder(target=target, source=source)
             bmreg.set_attr(rule, BUILD_OUTPUT, output)
+            env.Alias(str(rule.name), output)
 
         return builder_maker
