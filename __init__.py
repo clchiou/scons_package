@@ -1,14 +1,13 @@
 # Copyright (c) 2013 Che-Liang Chiou
 
-from SCons.Script import Environment
+from SCons.Script import Dir, Environment
 
 from scons_package.builder_maker_builder import BuilderMakerBuilder
 from scons_package.builder_maker_registry import BuilderMakerRegistry
 from scons_package.label import PackageName
 from scons_package.utils import glob
 
-__all__ = ['default_environment',
-           'package_environment',
+__all__ = ['package_environment',
            'library',
            'program',
            'make_builders',
@@ -16,16 +15,15 @@ __all__ = ['default_environment',
            'glob']
 
 
-def default_environment(env):
-    assert isinstance(env, Environment)
-    BuilderMakerRegistry.get_instance().set_default_env(env)
-
-
 def package_environment(env, package_str=None):
     assert isinstance(env, Environment)
     assert package_str is None or isinstance(package_str, str)
-    package_name = PackageName.make_package_name(package_str)
-    BuilderMakerRegistry.get_instance().set_package_env(package_name, env)
+    bmreg = BuilderMakerRegistry.get_instance()
+    if package_str is None and Dir('.') == Dir('#'):
+        bmreg.set_default_env(env)
+    else:
+        package_name = PackageName.make_package_name(package_str)
+        bmreg.set_package_env(package_name, env)
 
 
 def program(name, srcs, deps=(), variant=None, env=None):
