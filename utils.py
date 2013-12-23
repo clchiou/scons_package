@@ -1,5 +1,6 @@
 # Copyright (c) 2013 Che-Liang Chiou
 
+from collections import defaultdict, deque
 import os
 import re
 
@@ -19,3 +20,29 @@ def glob(pattern, recursive=False):
             if pattern.search(filename):
                 paths.append(filename)
     return paths
+
+
+def topology_sort(nodes, get_neighbors):
+    graph = {}
+    reverse_graph = defaultdict(deque)
+    ready = deque()
+    for node in nodes:
+        graph[node] = neighbors = set(get_neighbors(node))
+        for neighbor in neighbors:
+            reverse_graph[neighbor].append(node)
+        if not neighbors:
+            ready.append(node)
+
+    output = []
+    while ready:
+        node = ready.popleft()
+        output.append(node)
+        for reverse_neighbor in reverse_graph[node]:
+            neighbors = graph[reverse_neighbor]
+            neighbors.remove(node)
+            if not neighbors:
+                ready.append(reverse_neighbor)
+    if len(output) != len(graph):
+        raise RuntimeError('incorrect topology')
+
+    return output

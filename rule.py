@@ -1,8 +1,9 @@
 # Copyright (c) 2013 Che-Liang Chiou
 
-from collections import OrderedDict, defaultdict, deque
+from collections import OrderedDict
 
 from scons_package.label import Label, LabelOfRule, LabelOfFile
+from scons_package.utils import topology_sort
 
 
 class RuleRegistry:
@@ -27,6 +28,18 @@ class RuleRegistry:
         assert isinstance(rule, Rule)
         self.rules[rule.name] = rule
 
+    def get_missing_dependencies(self):
+        for label, rule in self.rules.items():
+            for depend in rule.depends:
+                if depend not in self.rules:
+                    yield label, depend
+
+    def get_sorted_rules(self):
+        def get_neighbors(rule):
+            assert isinstance(rule, Rule)
+            return (self.rules[label] for label in rule.depends)
+        return topology_sort(self.rules.values(), get_neighbors)
+
 
 class Rule(object):
 
@@ -43,45 +56,9 @@ class Rule(object):
             if name.package_name != label.package_name:
                 raise ValueError('output outside the package: %s, %s' %
                         (repr(label), repr(name)))
+        if name in inputs or name in depends:
+            raise ValueError('rule depends on itself: %s' % name)
         self.name = name
         self.inputs = inputs
         self.depends = depends
         self.outputs = outputs
-
-
-def check_depends(rules):
-    assert isinstance(rules, RuleRegistry)
-    for label in rules:
-        rule = rules[label]
-        for depend in rule.depends:
-            if depend not in rules:
-                yield label, depend
-
-
-def topology_sort(rules):
-    assert isinstance(rules, RuleRegistry)
-    output = []
-
-    graph = {}
-    reverse_graph = defaultdict(list)
-    ready = deque()
-    for label in rules:
-        rule = rules[label]
-        graph[label] = set(rule.depends)
-        for depend in rule.depends:
-            reverse_graph[depend].append(label)
-        if not rule.depends:
-            ready.append(label)
-
-    while ready:
-        label = ready.popleft()
-        output.append(rules[label])
-        for rdep in reverse_graph[label]:
-            deps = graph[rdep]
-            deps.remove(label)
-            if not deps:
-                ready.append(rdep)
-    if len(output) != len(rules):
-        raise RuntimeError('incorrect topology')
-
-    return output

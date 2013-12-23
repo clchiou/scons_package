@@ -93,7 +93,6 @@ class PackageName(object):
     def make_package_name(cls, package_str=None):
         assert package_str is None or isinstance(package_str, str)
         if not package_str:
-            # TODO(clchiou): This breaks after SConscriptChdir(0) is called.
             package_str = Dir('.').srcnode().path
         return cls(package_str)
 
