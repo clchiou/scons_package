@@ -206,10 +206,9 @@ class EnvironmentRegistry(object):
 
     def search(self, package_name):
         assert isinstance(package_name, PackageName)
-        try:
-            package_name = self.package_trie.search(package_name)
-        except KeyError:
+        package_name = self.package_trie.search(package_name)
+        if package_name is None:
             if self._default_env is None:
-                raise
+                raise KeyError(str(package_name))
             return self._default_env
         return self.envs[package_name]

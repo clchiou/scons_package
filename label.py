@@ -24,8 +24,8 @@ class Label(object):
                 package_str, target_str = label_str.split(':', 1)
             else:
                 package_str = label_str
-        elif ':' in label_str:
-            package_str, target_str = label_str.split(':', 1)
+        elif label_str.startswith(':'):
+            target_str = label_str[1:]
         else:
             target_str = label_str
         package_name = PackageName.make_package_name(package_str)
@@ -142,6 +142,9 @@ class TargetName(object):
     def __ne__(self, other):
         return not (self == other)
 
+    def __hash__(self):
+        return hash(self.target_name)
+
     @property
     def path(self):
         return self.target_name
@@ -165,7 +168,7 @@ class PackageTrie:
     def _add(self, node, path, package_name):
         assert package_name.path.startswith(path)
         for component, child in node.edges.items():
-            child_path = os.path.join(path, component)
+            child_path = path + component
             # Same package
             if child_path == package_name.path:
                 assert package_name == child.package_name
@@ -173,7 +176,7 @@ class PackageTrie:
             # package_name is shorter
             if child_path.startswith(package_name.path):
                 pkg_path = package_name.path
-                prefix = pkg_path[len(path):]
+                prefix = pkg_path[len(path)+1:]
                 suffix = child_path[len(pkg_path):]
                 new_node = PackageTrie.Node(package_name)
                 node.edges.pop(component)
@@ -194,21 +197,21 @@ class PackageTrie:
         assert isinstance(target, (PackageName, str))
         if isinstance(target, PackageName):
             target = target.path
-        return self._search(self.root, '', target)
+        return self._search(self.root, '', target).package_name
 
     def _search(self, node, path, target):
         assert target.startswith(path)
         for component, child in node.edges.items():
-            child_path = os.path.join(path, component)
+            child_path = path + component
             # Same package
             if child_path == target:
-                return child.package_name
+                return child
             # target is shorter
             if child_path.startswith(target):
-                return node
+                continue
             # child_path is shorter
             if target.startswith(child_path):
                 return self._search(child, child_path, target)
         # target does not match any child
         else:
-            raise KeyError(target)
+            return node
