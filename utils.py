@@ -27,7 +27,9 @@ def topology_sort(nodes, get_neighbors):
     reverse_graph = defaultdict(deque)
     ready = deque()
     for node in nodes:
-        graph[node] = neighbors = set(get_neighbors(node))
+        neighbors = set(get_neighbors(node))
+        neighbors.discard(node)  # Remove self-reference
+        graph[node] = neighbors
         for neighbor in neighbors:
             reverse_graph[neighbor].append(node)
         if not neighbors:
@@ -43,6 +45,6 @@ def topology_sort(nodes, get_neighbors):
             if not neighbors:
                 ready.append(reverse_neighbor)
     if len(output) != len(graph):
-        raise RuntimeError('incorrect topology')
+        raise ValueError('incorrect topology')
 
     return output
