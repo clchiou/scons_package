@@ -15,14 +15,14 @@ __all__ = ['package_environment',
            'glob']
 
 
-def package_environment(env, package_str=None):
+def package_environment(env, package=None):
     assert isinstance(env, Environment)
-    assert package_str is None or isinstance(package_str, str)
+    assert package is None or isinstance(package, str)
     bmreg = BuilderMakerRegistry.get_instance()
-    if package_str is None and Dir('.') == Dir('#'):
+    if package is None and Dir('.') == Dir('#'):
         bmreg.set_default_env(env)
     else:
-        package_name = PackageName.make_package_name(package_str)
+        package_name = PackageName.make_package_name(package)
         bmreg.set_package_env(package_name, env)
 
 
