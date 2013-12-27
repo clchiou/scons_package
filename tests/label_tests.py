@@ -140,6 +140,21 @@ class TestPackageTrie(unittest.TestCase):
         self.assertEqual(None, trie.search(f))
         self.assertEqual(None, trie.search(h))
 
+    def test_package_trie_shorter(self):
+        a = PackageName.make_package_name('a')
+        b = PackageName.make_package_name('a/b')
+        c = PackageName.make_package_name('a/b/c')
+
+        # Add in order a, c, b to trigger package_name is shorter case
+        trie = PackageTrie()
+        trie.add(a)
+        trie.add(c)
+        trie.add(b)
+
+        self.assertEqual(a, trie.search(a))
+        self.assertEqual(b, trie.search(b))
+        self.assertEqual(c, trie.search(c))
+
 
 if __name__ == '__main__':
     unittest.main()

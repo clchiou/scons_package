@@ -154,7 +154,8 @@ class PackageTrie:
 
     class Node:
         def __init__(self, package_name):
-            assert package_name is None or isinstance(package_name, PackageName)
+            assert (package_name is None or
+                    isinstance(package_name, PackageName))
             self.package_name = package_name
             self.edges = {}
 
@@ -176,7 +177,7 @@ class PackageTrie:
             # package_name is shorter
             if child_path.startswith(package_name.path):
                 pkg_path = package_name.path
-                prefix = pkg_path[len(path)+1:]
+                prefix = pkg_path[len(path):]
                 suffix = child_path[len(pkg_path):]
                 new_node = PackageTrie.Node(package_name)
                 node.edges.pop(component)
