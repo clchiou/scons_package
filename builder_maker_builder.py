@@ -7,8 +7,8 @@ from scons_package.rule import Rule
 
 # Attribute keys
 BUILD_OUTPUT = 'build_output'
-ENV          = 'env'
-EXPORT_ENV   = 'export_env'
+ENV = 'env'
+EXPORT_ENV = 'export_env'
 
 DEFAULT_VARIANT = 'host'
 
@@ -60,7 +60,6 @@ class BuilderMakerBuilder:
             bmreg.set_attr(self.rule, ENV, self.env)
         if self.export_env is not None:
             bmreg.set_attr(self.rule, EXPORT_ENV, self.export_env)
-
 
     @staticmethod
     def _build_builder_maker(builder_type):

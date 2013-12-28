@@ -6,9 +6,10 @@ from scons_package.utils import topology_sort
 class TestTopologySort(unittest.TestCase):
 
     def test_empty_graph(self):
-        nodes = []
         def get_neighbors(node):
             raise Exception()
+
+        nodes = []
         self.assertEqual([], list(topology_sort(nodes, get_neighbors)))
 
     def test_singleton(self):

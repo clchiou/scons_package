@@ -51,11 +51,11 @@ class Rule(object):
         for label in inputs:
             if name.package_name != label.package_name:
                 raise ValueError('input outside the package: %s, %s' %
-                        (repr(label), repr(name)))
+                                 (repr(label), repr(name)))
         for label in outputs:
             if name.package_name != label.package_name:
                 raise ValueError('output outside the package: %s, %s' %
-                        (repr(label), repr(name)))
+                                 (repr(label), repr(name)))
         if name in inputs or name in depends:
             raise ValueError('rule depends on itself: %s' % name)
         self.name = name

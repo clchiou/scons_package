@@ -106,11 +106,11 @@ class TestLabel(unittest.TestCase):
     def test_subclass(self):
         self.assertTrue(isinstance(LabelOfFile.make_label(':'), LabelOfFile))
         self.assertTrue(all(isinstance(label, LabelOfFile)
-            for label in LabelOfFile.make_label_list(': :')))
+                        for label in LabelOfFile.make_label_list(': :')))
 
         self.assertTrue(isinstance(LabelOfRule.make_label(':'), LabelOfRule))
         self.assertTrue(all(isinstance(label, LabelOfRule)
-            for label in LabelOfRule.make_label_list(': :')))
+                        for label in LabelOfRule.make_label_list(': :')))
 
     def test_invalid_label(self):
         self.assertRaises(ValueError, Label.make_label, 'a/b/c:')

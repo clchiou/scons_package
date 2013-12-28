@@ -12,7 +12,7 @@ from scons_package.utils import topology_sort
 
 
 BUILDER_MAKER = 'builder_maker'
-VARIANT       = 'variant'
+VARIANT = 'variant'
 
 
 class BuilderMakerRegistry:
@@ -91,9 +91,9 @@ class BuilderMakerRegistry:
         for variant in self.build_order.get_variants():
             variant_dir = os.path.join(build_root, variant)
             SConscript(sconscript,
-                    variant_dir=variant_dir,
-                    duplicate=duplicate,
-                    exports={'variant': variant})
+                       variant_dir=variant_dir,
+                       duplicate=duplicate,
+                       exports={'variant': variant})
 
     def make_variant_builders(self, variant):
         assert self.build_order is not None
@@ -119,6 +119,7 @@ class BuildOrder:
                 variant_to = bmreg.get_attr(label_to, VARIANT)
                 if variant_from != variant_to:
                     graph[variant_from].add(variant_to)
+
         def get_neighbors(variant):
             return graph[variant]
         variants = topology_sort(variants, get_neighbors)
@@ -134,7 +135,8 @@ class BuildOrder:
     def _check_depends(rules):
         okay = True
         for name, depend in rules.get_missing_dependencies():
-            sys.stderr.write('%s depends on non-existing %s\n' % (name, depend))
+            sys.stderr.write('%s depends on non-existing %s\n' %
+                             (name, depend))
             sys.stderr.write('Targets in package %s:\n' % depend.package_name)
             for label in rules:
                 if label.package_name == depend.package_name:
@@ -151,7 +153,7 @@ class BuildOrder:
             variant = bmreg.get_attr(label, VARIANT)
             if variant_rule != variant:
                 raise RuntimeError('variant of %s and %s differ: %s, %s' %
-                        (rule.name, label, variant_rule, variant))
+                                   (rule.name, label, variant_rule, variant))
 
     def __init__(self, variants, variant_rules):
         self.variants = variants
