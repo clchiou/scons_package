@@ -17,6 +17,8 @@ from scons_package.utils import glob
 
 __all__ = ['search_package_environment',
            'search_package_variant',
+           'default_environment',
+           'default_variant',
            'package_environment',
            'package_variant',
            'library',
@@ -36,6 +38,18 @@ def search_package_variant(package=None):
     '''Search package's variant.'''
     assert package is None or isinstance(package, str)
     return _package_get(PackageVariantRegistry.get_instance(), package)
+
+
+def default_environment(env):
+    '''Set default environment.'''
+    assert isinstance(env, Environment)
+    PackageEnvironmentRegistry.get_instance().default = env
+
+
+def default_variant(variant):
+    '''Set default variant.'''
+    assert isinstance(variant, str)
+    PackageVariantRegistry.get_instance().default = variant
 
 
 def package_environment(env, package=None):
@@ -58,11 +72,8 @@ def _package_get(trie, package_str):
 
 
 def _package_set(trie, package_str, value):
-    if package_str is None and Dir('.') == Dir('#'):
-        trie.default = value
-    else:
-        pkg_name = PackageName.make_package_name(package_str)
-        trie.add(pkg_name, value)
+    pkg_name = PackageName.make_package_name(package_str)
+    trie.add(pkg_name, value)
 
 
 def program(name, srcs, deps=(), variant=None, env=None):
