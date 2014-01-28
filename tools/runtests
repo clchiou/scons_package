@@ -1,0 +1,10 @@
+#!/bin/bash
+
+TOPDIR=$(realpath $(dirname ${0})/..)
+UNITTESTS=(label_tests package_registry_tests utils_test)
+
+set -ex
+
+cd "${TOPDIR}/tests"
+python2 -m unittest ${UNITTESTS[@]}
+python3 -m unittest ${UNITTESTS[@]}
